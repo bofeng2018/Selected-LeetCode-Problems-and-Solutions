@@ -47,5 +47,7 @@ class Solution:
             dp[-1][i] = max(1, dp[-1][i + 1] - dungeon[-1][i])
         for i in range(m - 2, -1, -1):
             for j in range(n - 2, -1, -1): # Compute the health points for the rest cells.
-                dp[i][j] = max(min(dp[i + 1][j], dp[i][j + 1]) - dungeon[i][j], 1) # Minimum health points needed to cover the penalty (no penalty case corresponds to 1 in the formula) in the current cell and also meet the need for either the down or right cell. 
+                dp[i][j] = max(min(dp[i + 1][j], dp[i][j + 1]) - dungeon[i][j], 1)
+		# Minimum health points needed to cover the penalty (no penalty case corresponds to 1 in the formula) in the current
+		# cell and also meet the need for either the down or right cell. 
         return dp[0][0]
