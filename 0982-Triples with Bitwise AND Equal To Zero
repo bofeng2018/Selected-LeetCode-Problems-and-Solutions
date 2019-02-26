@@ -1,4 +1,5 @@
 # LeetCode 982: Triples with Bitwise AND Equal To Zero
+# https://leetcode.com/problems/triples-with-bitwise-and-equal-to-zero/
 
 # Given an array of integers A, find the number of triples of indices (i, j, k) such that:
 # 0 <= i < A.length
