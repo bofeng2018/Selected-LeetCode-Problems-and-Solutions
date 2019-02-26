@@ -1,0 +1,46 @@
+LeetCode 2: Add Two Numbers
+https://leetcode.com/problems/add-two-numbers/
+
+You are given two non-empty linked lists representing two non-negative integers. The digits are stored in reverse order and each of their nodes contain a single digit. Add the two numbers and return it as a linked list.
+
+You may assume the two numbers do not contain any leading zero, except the number 0 itself.
+
+Example:
+
+Input: (2 -> 4 -> 3) + (5 -> 6 -> 4)
+Output: 7 -> 0 -> 8
+Explanation: 342 + 465 = 807.
+
+Solution:
+The only difficulty of this problem is to deal with carries. When only one of l1 and l2 runs out and the carry is not 0, then we neet to add the carry to the remaining list until the carry becomes 0. Also when both lists run out and the carry is not 0, we also need to consider the carry.
+Time Complexity: O(M + N)
+Space Complexity: O(M + N)
+
+
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    def addTwoNumbers(self, l1: ListNode, l2: ListNode) -> ListNode:
+        ans, dummy, carry = [], ListNode(0), 0
+        node = dummy
+        while l1 and l2:
+            carry, cur = divmod(l1.val + l2.val + carry, 10)
+            node.next = ListNode(cur)
+            l1, l2, node = l1.next, l2.next, node.next
+        while carry and l1:
+            carry, cur = divmod(l1.val + carry, 10)
+            node.next = ListNode(cur)
+            l1, node = l1.next, node.next
+        while carry and l2:
+            carry, cur = divmod(l2.val + carry, 10)
+            node.next = ListNode(cur)
+            l2, node = l2.next, node.next
+        if carry:
+            node.next = ListNode(carry)
+            node = node.next
+        node.next = l1 if l1 else l2
+        return dummy.next
