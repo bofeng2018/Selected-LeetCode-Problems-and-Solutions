@@ -1,0 +1,53 @@
+LeetCode 4: Median of Two Sorted Arrays
+https://leetcode.com/problems/median-of-two-sorted-arrays/
+
+There are two sorted arrays nums1 and nums2 of size m and n respectively.
+
+Find the median of the two sorted arrays. The overall run time complexity should be O(log (m+n)).
+
+You may assume nums1 and nums2 cannot be both empty.
+
+Example 1:
+
+nums1 = [1, 3]
+nums2 = [2]
+
+The median is 2.0
+Example 2:
+
+nums1 = [1, 2]
+nums2 = [3, 4]
+
+The median is (2 + 3)/2 = 2.5
+
+Solution:
+In the case that m + n is an odd number, the median of the two arrays is the just the [(m + n) // 2]-th (index) smallest number. But its index in the array it belongs to is not clear. So the idea is to trim off both arrays of the elements that do not include the target index until one of the array runs out. Then we can easily return the correct index in the only non-empty array. But how to determine if the target index is included in certain groups of elements?
+
+Let's use [i1, i2] and [j1, j2] (boundary inclusive) to denote the current searching regions of the two arrays and the target index is the (INDEX + 1)-th smallest number in the combined region. Then let m1 and m2 be equal to (i1 + i2) // 2 and (j1 + j2) // 2, respectively. If m1 + m2 + 1 <= INDEX, what does it imply? It implies that the total count of numbers smaller than nums1[m1] in nums1 and nums2[m2] in nums2, together with one of nums1[m1] and nums2[m2] is at most INDEX large. If nums1[m1] >= nums2[m2], what can we conclude then? We can conclude that the total count of numbers smaller than nums2[m2] in both nums1 and nums2, together with nums2[m2] is at most INDEX large. Thus, the (INDEX + 1)-th smallest number is definitely not included in the numbers with indexes smaller than or equal to m2 in nums2 (For example, if INDEX == 1, it means that we are looking for the second smallest number), and we can safely remove those small numbers in nums2 and decrease the INDEX by the numbers removed. If nums1[m1] < nums2[m1], things are similar.
+
+How about the case that m1 + m2 + 1 > INDEX? Well, let's still use nums1[m1] >= nums2[m2] as an example. It means nums1[m1] is at least the (INDEX + 2)-th smallest number in the combined region, and the target number must be smaller than or equal to nums1[m1]. So we can safely remove the numbers in nums1 that have equal or larger indexes than m1. However, this time INDEX remains unchanged. Everything is pretty similar in the case of nums1[m1] < nums2[m2]
+
+Time Complexity: O(log(max(M, N)))
+Space Complexity: O(1)
+
+class Solution:
+    def findMedianSortedArrays(self, nums1: List[int], nums2: List[int]) -> float:
+        def kth(i1, i2, j1, j2, index):
+            if i1 > i2:
+                return nums2[j1 + index]
+            if j1 > j2:
+                return nums1[i1 + index]
+            m1, m2 = (i2 + i1) // 2, (j2 + j1) // 2
+            if (m1 - i1) + (m2 - j1) + 1 <= index:
+                if nums1[m1] >= nums2[m2]:
+                    return kth(i1, i2, m2 + 1, j2, index - m2 + j1 - 1)
+                return kth(m1 + 1, i2, j1, j2, index - m1 + i1 - 1)
+            if nums1[m1] >= nums2[m2]:
+                return kth(i1, m1 - 1, j1, j2, index)
+            return kth(i1, i2, j1, m2 - 1, index)
+        
+        m, n = len(nums1), len(nums2)
+        d, r = divmod(m + n, 2)
+        if r:
+            return kth(0, m - 1, 0, n - 1, d)
+        return (kth(0, m - 1, 0, n - 1, d - 1) + kth(0, m - 1, 0, n - 1, d)) / 2
