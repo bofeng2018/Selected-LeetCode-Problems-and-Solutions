@@ -1,46 +1,53 @@
-LeetCode 1000: Minimum Cost to Merge Stones
-https://leetcode.com/problems/minimum-cost-to-merge-stones/
+# LeetCode 1000: Minimum Cost to Merge Stones
+# https://leetcode.com/problems/minimum-cost-to-merge-stones/
 
-There are N piles of stones arranged in a row.  The i-th pile has stones[i] stones.
+# There are N piles of stones arranged in a row.  The i-th pile has stones[i] stones.
 
-A move consists of merging exactly K consecutive piles into one pile, and the cost of this move is equal to the total number of stones in these K piles.
+# A move consists of merging exactly K consecutive piles into one pile, and the cost of this move is equal to the total number of stones
+# in these K piles.
 
-Find the minimum cost to merge all piles of stones into one pile.  If it is impossible, return -1.
+# Find the minimum cost to merge all piles of stones into one pile.  If it is impossible, return -1.
 
-Example 1:
-Input: stones = [3,2,4,1], K = 2
-Output: 20
-Explanation: 
-We start with [3, 2, 4, 1].
-We merge [3, 2] for a cost of 5, and we are left with [5, 4, 1].
-We merge [4, 1] for a cost of 5, and we are left with [5, 5].
-We merge [5, 5] for a cost of 10, and we are left with [10].
-The total cost was 20, and this is the minimum possible.
+# Example 1:
+# Input: stones = [3,2,4,1], K = 2
+# Output: 20
+# Explanation: 
+# We start with [3, 2, 4, 1].
+# We merge [3, 2] for a cost of 5, and we are left with [5, 4, 1].
+# We merge [4, 1] for a cost of 5, and we are left with [5, 5].
+# We merge [5, 5] for a cost of 10, and we are left with [10].
+# The total cost was 20, and this is the minimum possible.
 
-Example 2:
-Input: stones = [3,2,4,1], K = 3
-Output: -1
-Explanation: After any merge operation, there are 2 piles left, and we can't merge anymore.  So the task is impossible.
+# Example 2:
+# Input: stones = [3,2,4,1], K = 3
+# Output: -1
+# Explanation: After any merge operation, there are 2 piles left, and we can't merge anymore.  So the task is impossible.
 
-Example 3:
-Input: stones = [3,5,1,2,6], K = 3
-Output: 25
-Explanation: 
-We start with [3, 5, 1, 2, 6].
-We merge [5, 1, 2] for a cost of 8, and we are left with [3, 8, 6].
-We merge [3, 8, 6] for a cost of 17, and we are left with [17].
-The total cost was 25, and this is the minimum possible.
+# Example 3:
+# Input: stones = [3,5,1,2,6], K = 3
+# Output: 25
+# Explanation: 
+# We start with [3, 5, 1, 2, 6].
+# We merge [5, 1, 2] for a cost of 8, and we are left with [3, 8, 6].
+# We merge [3, 8, 6] for a cost of 17, and we are left with [17].
+# The total cost was 25, and this is the minimum possible.
  
-Note:
-1 <= stones.length <= 30
-2 <= K <= 30
-1 <= stones[i] <= 100
+# Note:
+# 1 <= stones.length <= 30
+# 2 <= K <= 30
+# 1 <= stones[i] <= 100
 
-Solution:
-The idea is to perform a 3-dimensional dynamic-programming search for the optimal solution. A dp[i][j][k] represets the least cost to form a group of k + 1 piles of stones using stones indexed from i to j - 1. Assuming n is the length of array STONES, then i is from 0 to n - 1, while j is from 0 to n (j is the index on the immediate right side of the rightmost stone) and k is from 0 to K. The key component in the algorithm is to convert a problem of forming only 1 pile of stones to forming K piles of stones, since K piles of stones are always the last state of stones before forming the final 1 piles of stones. Then, forming K piles of stones can be divided into forming 1 pile of stones on the left, and (K - 1) piles of stones on the right. Using these transitions, the problem can then be solved eventually.
+# Solution:
+# The idea is to perform a 3-dimensional dynamic-programming search for the optimal solution. A dp[i][j][k] represets the least cost to
+# form a group of k + 1 piles of stones using stones indexed from i to j - 1. Assuming n is the length of array STONES, then i is from 0
+# to n - 1, while j is from 0 to n (j is the index on the immediate right side of the rightmost stone) and k is from 0 to K. The key
+# component in the algorithm is to convert a problem of forming only 1 pile of stones to forming K piles of stones, since K piles of
+# stones are always the last state of stones before forming the final 1 piles of stones. Then, forming K piles of stones can be divided
+# into forming 1 pile of stones on the left, and (K - 1) piles of stones on the right. Using these transitions, the problem can then be
+# solved eventually.
 
-Time Complexity: O(N ** 3 / K)
-Space Complexity: O(N ** 2 * K)
+# Time Complexity: O(N ** 3 / K)
+# Space Complexity: O(N ** 2 * K)
 
 class Solution:
     def mergeStones(self, stones: List[int], K: int) -> int:
@@ -52,17 +59,26 @@ class Solution:
                     save[start][end][num] = inf
                 else:
                     if num == 1:
-                        save[start][end][num] = dp(start, end, K) + sums[end] - sums[start] # If only 1 pile is desired in the end, then the last step must be to merge K piles into 1 pile using all existing stones. No matter how this optimal K-pile is formed, merging all of them into 1 pile will always cost the sum of all stone values from "start" to "end".
+                        save[start][end][num] = dp(start, end, K) + sums[end] - sums[start]
+                        # If only 1 pile is desired in the end, then the last step must be to merge K piles into 1 pile using all
+                        # existing stones. No matter how this optimal K-pile is formed, merging all of them into 1 pile will always cost
+                        # the sum of all stone values from "start" to "end".
                     else:
                         save[start][end][num] = inf
                         for i in range(start + 1, end, K - 1):
-                            save[start][end][num] = min(save[start][end][num], dp(start, i, 1) + dp(i, end, num - 1)) # The final "num" pile must always be formed by a leftmost 1 pile, and m - 1 piles on its right. "i" here is the index of the stone on the immediate right side of the leftmost pile. The step "K - 1" is used to make sure stones from start to i can form exactly 1 pile.
+                            save[start][end][num] = min(save[start][end][num], dp(start, i, 1) + dp(i, end, num - 1))
+                            # The final "num" pile must always be formed by a leftmost 1 pile, and m - 1 piles on its right. "i" here is
+                            # the index of the stone on the immediate right side of the leftmost pile. The step "K - 1" is used to make
+                            # sure stones from start to i can form exactly 1 pile.
             return save[start][end][num]
         
         n, sums, inf = len(stones), [0], float("inf")
         for s in stones:
             sums.append(sums[-1] + s) # For O(1) subarray sum calculation.
-        save = [[["TBD" for k in range(K + 1)] for j in range(n + 1)] for i in range(n)] # A 3-dimensional array to save sub-problem DP solution. i and j are the starting (inclusive) and ending (exclusive) indexes of the current stone subarray, while k is the number of piles to form using those stones. j and k only need to range from 0 to n and K, respectively, but their ranges are expanded by 1 here to simplify algorithm understanding.
+        save = [[["TBD" for k in range(K + 1)] for j in range(n + 1)] for i in range(n)]
+        # A 3-dimensional array to save sub-problem DP solution. i and j are the starting (inclusive) and ending (exclusive) indexes of
+        # the current stone subarray, while k is the number of piles to form using those stones. j and k only need to range from 0 to n -
+        # 1 and K - 1, respectively, but their ranges are expanded by 1 here to simplify algorithm understanding.
         ans = dp(0, n, 1)
         return ans if ans < inf else -1 # If the cost is infinity, then it means the desired merging cannot be achieved.
 
